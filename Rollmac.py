@@ -1,17 +1,14 @@
-import requests, spoofmac, psutil, datetime, logging, time, subprocess
+import requests, spoofmac, psutil, datetime, logging, time, subprocess, json, sys
 import bs4 as soup
 
 
 class RollMac():
-    def __init__(self, ssid, limit, time_limit, interface, domain):
+    def __init__(self):
         self.setup_logging()
-        self.info = {'domain': domain}
-        self.ssid = ssid
-        self.limit = limit
-        self.time_limit = time_limit
+        self.get_config()
+        self.info = {'domain': self.domain}
         self.over_limit = True
         self.old_t_mbytes = 0
-        self.interface = interface
 
     def run(self):
         # Will hit on first loop, then on over limit
@@ -156,6 +153,20 @@ class RollMac():
 
         return requests.post(form['action'], data=post_dict).status_code
 
+    def get_config(self):
+        try:
+            with open('conf.json', 'r') as f:
+                self.config = json.load(f)
+
+            self.ssid = self.config['ssid']
+            self.limit = self.config['MB_limit']
+            self.time_limit = self.config['TIME_limit']
+            self.interface = self.config['interface']
+            self.domain = self.config['domain']
+
+        except Exception as e:
+            sys.exit(e)
+
     def setup_logging(self):
         # Silence request module
         logging.getLogger("requests").setLevel(logging.WARNING)
@@ -179,27 +190,8 @@ class RollMac():
 
 
 if __name__ =='__main__':
-
-    # Change these to suit your system:
-    ssid = 'Free WiFi'
-
-    # Set to MB or 9999999999999 for ifinite
-    MB_limit = 250
-
-    # Set to mins or 99999999999 for infinite
-    TIME_limit = 60
-
-    # Set to your Interface name
-    interface = 'Wireless Local Area Connection'
-
-    # Set to the domain of the network you are joining (You can get it from ipconfig /all)
-    domain = 'xxx.com'
-
-    # You may want to change this value to 1 to stop ie/browser opening again on reconnect
-    # 'HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\WPAD\WpadOverride'
-
     # Init class
-    main = RollMac(ssid, MB_limit, TIME_limit, interface, domain)
+    main = RollMac()
 
     # Loop forever
     while True:
