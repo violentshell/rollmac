@@ -1,5 +1,7 @@
 # Rollmac
-This script was produced to avoid the connect, download, hit limit, change mac, reconnect loop that a user has to repeat on a data or time limited WiFi network. Rollmac tries to automatically find the networks proxy page and simulate a user accepting the T & C form by submitting the corresponding post. 
+Free networks often impose either a time or data restriction and this can be used quickly. When this happens you can change your mac address and reconnect, but this is annoying, and it takes time. In addition, most networks will ask you to re-accept the terms and conditions of the network in order to continue.
+
+Rollmac is designed to automate this process by using the WPAD protocol to discover the login page and automatically re-accept the terms and conditions. It also maintains a watch of the network current usage and/or time limit to ensure it is never reached. This means you can run downloads overnight or while you are away from your computer, automatically rolling mac's and reconnecting to the free network.
 
 The entire operation usually takes about 10 seconds.
 
