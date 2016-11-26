@@ -1,0 +1,11 @@
+{
+  "ssid": "Free WiFi",
+
+  "MB_limit": 250,
+
+  "TIME_limit": 60,
+
+  "interface":"Wireless",
+
+  "domain": "freewifi.com"
+}
