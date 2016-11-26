@@ -27,7 +27,7 @@ Set to your wireless interface name:
 
 Set to the domain of the network you are joining (You can get it from ipconfig /all):
 
-    domain = 'iinet.net.au'
+    domain = 'freewifi.com'
 
 You may want to change this value to 1 to stop ie/browser opening again on each reconnect:
 
