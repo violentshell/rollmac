@@ -45,7 +45,7 @@ class RollMac():
         :return: Nothing. Sets mac on interface
         '''
         self.mac = spoofmac.random_mac_address()
-        spoofmac.set_interface_mac(self.interface, spoofmac.random_mac_address())
+        spoofmac.set_interface_mac(self.interface, self.mac)
         self.log.debug('Changed mac of {} to: {}'.format(self.interface, self.mac))
 
     def limit_check(self):
