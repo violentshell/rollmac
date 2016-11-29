@@ -61,7 +61,6 @@ class RollMac:
         """
         :return: True if within 5% of MB limit; False if outside 5% of MB limit
         """
-
         # Check time limit and MB limit
         if self.time_check() or self.data_check():
             return True
