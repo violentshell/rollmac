@@ -59,7 +59,7 @@ class RollMac:
 
     def limit_check(self):
         """
-        :return: True if within 5% of MB limit; False if outside 5% of MB limit
+        :return: True if within 5% of time/data limit; False if outside 5% of time/data limit
         """
         # Check time limit and MB limit
         if self.time_check() or self.data_check():
@@ -70,7 +70,6 @@ class RollMac:
         """
         :return: True if within 5 min of limit; False if outside 5 min of limit
         """
-
         try:
             self.start_time
         except NameError:
@@ -90,6 +89,9 @@ class RollMac:
         return False
 
     def data_check(self):
+        """
+        :return: True if within 5% of MB limit; False if outside 5% of MB limit
+        """
         # Raw interface bytes TODO Linux compatible?
         netbytes = psutil.net_io_counters(True)[self.interface]
 
