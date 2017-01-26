@@ -1,6 +1,5 @@
 import bs4 as soup
 import datetime
-import json
 import logging
 import psutil
 import requests
@@ -8,6 +7,7 @@ import spoofmac
 import subprocess
 import sys
 import time
+import jconf
 
 
 # noinspection PyAttributeOutsideInit
@@ -15,9 +15,8 @@ class RollMac:
     def __init__(self):
         self.setup_logging()
         self.get_config()
-        self.info = {'domain': self.domain}
+        self.info = {'domain': self.config.domain}
         self.over_limit = True
-        self.old_t_mbytes = 0
 
     def run(self):
         # Will hit on first loop, then on over limit
@@ -39,7 +38,7 @@ class RollMac:
             if self.login() == 200:
                 self.log.info('Reconnected to AP with new mac. Resetting data limit')
 
-                # Reset limits ( Data is done automatically by flapping interface)
+                # Reset limits (Data is done automatically by flapping interface)
                 self.over_limit = False
                 self.start_time = datetime.datetime.now()
 
@@ -54,13 +53,14 @@ class RollMac:
         :return: Nothing. Sets mac on interface
         """
         self.mac = spoofmac.random_mac_address()
-        spoofmac.set_interface_mac(self.interface, self.mac)
-        self.log.debug('Changed mac of {} to: {}'.format(self.interface, self.mac))
+        spoofmac.set_interface_mac(self.config.interface, self.mac)
+        self.log.debug('Changed mac of {} to: {}'.format(self.config.interface, self.mac))
 
     def limit_check(self):
         """
-        :return: True if within 5% of time/data limit; False if outside 5% of time/data limit
+        :return: True if within 5% of MB limit; False if outside 5% of MB limit
         """
+
         # Check time limit and MB limit
         if self.time_check() or self.data_check():
             return True
@@ -70,6 +70,7 @@ class RollMac:
         """
         :return: True if within 5 min of limit; False if outside 5 min of limit
         """
+
         try:
             self.start_time
         except NameError:
@@ -80,29 +81,26 @@ class RollMac:
         online_time = (datetime.datetime.now() - self.start_time).seconds / 60
 
         # For info
-        self.log.info('{} minutes remaining'.format(round(self.time_limit - online_time - 5)))
+        self.log.info('{} minutes remaining'.format(round(self.config.time_limit - online_time - 5)))
 
         # Return True if over limit threshold
-        if self.time_limit - online_time <= 5:
+        if self.config.time_limit - online_time <= 5:
             self.log.warn('Over time limit.')
             return True
         return False
 
     def data_check(self):
-        """
-        :return: True if within 5% of MB limit; False if outside 5% of MB limit
-        """
         # Raw interface bytes TODO Linux compatible?
-        netbytes = psutil.net_io_counters(True)[self.interface]
+        netbytes = psutil.net_io_counters(True)[self.config.interface]
 
         # Convert total to MB
         t_mbytes = (netbytes.bytes_recv + netbytes.bytes_sent) >> 20
 
         # For info
-        self.log.debug('{} MB remaining'.format(self.limit - t_mbytes))
+        self.log.debug('{} MB remaining'.format(self.config.limit - t_mbytes))
 
         # Return True if over limit threshold
-        if t_mbytes >= (self.limit - (5 / 100 * self.limit)):
+        if t_mbytes >= (self.config.limit - (5 / 100 * self.config.limit)):
             self.log.warn('Over data limit.')
             return True
         return False
@@ -112,9 +110,9 @@ class RollMac:
         :return: True if connected, False for fail
         """
 
-        netsh = subprocess.check_output('netsh wlan connect name="{}"'.format(self.ssid))
+        netsh = subprocess.check_output('netsh wlan connect name="{}"'.format(self.config.ssid))
         if b'Connection request was completed successfully.' in netsh:
-            return self.log.debug('Re-assosiated with {}'.format(self.ssid))
+            return self.log.debug('Re-assosiated with {}'.format(self.config.ssid))
 
     def retry_get(self, url):
         """
@@ -169,14 +167,7 @@ class RollMac:
 
     def get_config(self):
         try:
-            with open('conf.json', 'r') as f:
-                self.config = json.load(f)
-            self.ssid = self.config['ssid']
-            self.limit = self.config['MB_limit']
-            self.time_limit = self.config['TIME_limit']
-            self.interface = self.config['interface']
-            self.domain = self.config['domain']
-
+            self.config = jconf.Jconf('conf.json')
         except Exception as e:
             sys.exit(e)
 
