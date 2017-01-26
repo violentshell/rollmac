@@ -1,12 +1,11 @@
 # Rollmac
-Free networks often impose either a time or data restriction and this can be used quickly. When this happens you can change your mac address and reconnect, but this is annoying, and it takes time. In addition, most networks will ask you to re-accept the terms and conditions of the network in order to continue.
+Free WiFi networks often impose either a time or data restriction and this can be used quickly. When this happens a user can often change thier MAC address and reconnect to reset the limitation, but this is annoying, and it takes time. In addition, most networks will ask the user to re-accept the terms and conditions of the network in order to continue.
 
-Rollmac is designed to automate this process by using the WPAD protocol to discover the login page and automatically re-accept the terms and conditions. It also maintains a watch of the network current usage and/or time limit to ensure it is never reached. This means you can run downloads overnight or while you are away from your computer, automatically rolling mac's and reconnecting to the free network.
+Rollmac is designed to automate this process by changing the MAC address, then using the WPAD protocol to discover the login page and automatically re-accept the terms and conditions. It also maintains a watch of the network current usage and/or time limit to ensure it is never reached. This means you can run downloads overnight or while you are away from your computer, automatically rolling mac's and reconnecting to the free network.
 
-The entire operation usually takes about 10 seconds.
+The entire recconnect operation usually takes about 10 seconds.
 
 You may need to configure the script slightly to adjust to individual network specifics, however, Rollmac allows you to download massive amounts of data without user input by setting the conf file and leaving it running overnight. 
-
 
 
 The program is controlled by variables inside the conf.json file. Modify these to meet your network/host machine:
